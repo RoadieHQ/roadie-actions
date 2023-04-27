@@ -1,0 +1,13 @@
+{
+  "name": "sync-techdocs-action",
+  "version": "1.0.0",
+  "description": "Update a repository's Backstage Techdocs build in Roadie",
+  "repository": "git@github.com:RoadieHQ/sync-techdocs-action.git",
+  "author": "sblausten <sam@roadie.io>",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "@actions/core": "^1.10.0"
+  }
+}

@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: roadie-github-actions
+  title: Github Actions to use with Roadie Backstage
+  annotations:
+    github.com/project-slug: roadiehq/roadie-actions
+spec:
+  type: library
+  owner: RoadieHQ
+  lifecycle: production
