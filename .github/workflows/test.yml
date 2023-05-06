@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install dependancies
+        run: yarn install
       - name: Build code
         run: yarn build
       - name: Test techdocs-sync action on single-doc catalog-info
