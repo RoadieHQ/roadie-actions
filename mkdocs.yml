@@ -1,0 +1,4 @@
+site_name: 'roadie-sync-techdocs-action'
+
+plugins:
+  - techdocs-core

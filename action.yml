@@ -1,18 +1,14 @@
-name: Sync Techdocs
+name: Sync Roadie Techdocs
 author: RoadieHQ
-description: "Update a repository's Backstage Techdocs build"
+description: "Update a repository's Roadie Backstage techdocs build"
 inputs:
   path:
     description: "Path to the yaml file representing the Backstage entity linked to these docs. Defaults to `./catalog-info.yaml`"
     required: false
     default: './catalog-info.yaml'
-  api-key:
-    description: 'Trims output'
+  roadie-api-key:
+    description: 'API key for the Roadie API'
     required: true
-    default: false
-outputs:
-  content:
-    description: 'File content'
 runs:
   using: 'node16'
   main: 'dist/index.js'

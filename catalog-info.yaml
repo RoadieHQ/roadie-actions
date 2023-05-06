@@ -1,10 +1,12 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: roadie-github-actions
-  title: Github Actions to use with Roadie Backstage
+  name: roadie-sync-techdocs-action
+  title: Syncs Techdocs in Roadie Backstage via Github Actions
   annotations:
-    github.com/project-slug: roadiehq/roadie-actions
+    github.com/project-slug: roadiehq/sync-techdocs-action
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: library
   owner: RoadieHQ

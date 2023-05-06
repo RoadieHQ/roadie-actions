@@ -1,0 +1,21 @@
+on: [ push, pull_request ]
+
+jobs:
+  test-sync-techdocs:
+    runs-on: ubuntu-latest
+    name: Test Sync Techdocs Action
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Test techdocs-sync action on single-doc catalog-info
+        id: test-action-single-doc
+        uses: ./
+        with:
+          path: './catalog-info.yaml'
+          roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
+      - name: Test techdocs-sync action on multi-doc catalog-info
+        id: test-action-multi-doc
+        uses: ./
+        with:
+          path: './catalog-info-test.yaml'
+          roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
