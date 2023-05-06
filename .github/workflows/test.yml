@@ -25,9 +25,11 @@ jobs:
         with:
           path: './catalog-info.yaml'
           roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
+          github-token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
       - name: Test techdocs-sync action on multi-doc catalog-info
         id: test-action-multi-doc
         uses: ./
         with:
           path: './catalog-info-test.yaml'
           roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
+          github-token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}

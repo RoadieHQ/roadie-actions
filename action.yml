@@ -9,6 +9,9 @@ inputs:
   roadie-api-key:
     description: 'API key for the Roadie API'
     required: true
+  github-token:
+    description: 'A Github PAT to fetch details about the files changes in the Pull Request'
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'

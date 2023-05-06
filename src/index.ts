@@ -22,15 +22,26 @@ const run = async () => {
     // console.log(`Changed files: ${changedFiles}`)
     // console.log(changedFiles)
 
+    // const diffRes = await fetch(context.pull_request.diff_url)
+    // if (!diffRes.ok) {
+    //     console.error(`Failed to fetch diff`)
+    // }
+    // if (diffRes.ok) {
+    //     console.log(`Fetched diff ${diffRes}`)
+    // }
+
     const githubToken = core.getInput('github-token');
     const octokit = github.getOctokit(githubToken)
-    const { data: diff } = await octokit.repos.compareCommitsWithBasehead( {
-        owner: 'owner',
+
+    const res = await octokit.repos.compareCommitsWithBasehead( {
+        owner: context.payload.organization.login,
         repo: 'repo',
         basehead: `base...head`,
         per_page: 50,
     } );
-    console.log(`${diff.files.length} changed files`)
+    console.log(res.data)
+    console.log(res.body)
+    console.log(`${res.data?.files?.length} changed files`)
 
 
     if(apiKey === '') {
