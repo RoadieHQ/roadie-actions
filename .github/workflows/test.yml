@@ -2,15 +2,24 @@ on: [ push, pull_request ]
 
 jobs:
   test-sync-techdocs:
-    runs-on: ubuntu-latest
     name: Test Sync Techdocs Action
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Install dependancies
-        run: yarn install
-      - name: Build code
-        run: yarn build
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: yarn install
+      - run: yarn run lint:security
+      - run: yarn build
+        -
       - name: Test techdocs-sync action on single-doc catalog-info
         id: test-action-single-doc
         uses: ./
