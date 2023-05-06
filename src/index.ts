@@ -6,19 +6,32 @@ import path from 'path';
 import {context} from "@actions/github";
 import simpleGit, { Response } from 'simple-git'
 import {info} from "@actions/core";
+const github = require('@actions/github');
 
 const run = async () => {
     const baseUrl = `https://api.roadie.so`;
     const catalogInfoPath = core.getInput('path')
     const apiKey = core.getInput('roadie-api-key')
 
-    const baseDir = path.join(process.cwd(), '')
-    const git = simpleGit({ baseDir })
-    const diff = await git.diffSummary(['--cached'])
+
+    console.log(context)
+    // const baseDir = path.join(process.cwd(), '')
+    // const git = simpleGit({ baseDir })
+    // const diff = await git.diffSummary(['--cached'])
+    // const changedFiles = diff.files.map(f => f.file)
+    // console.log(`Changed files: ${changedFiles}`)
+    // console.log(changedFiles)
+
+    const githubToken = core.getInput('github-token');
+    const octokit = github.getOctokit(githubToken)
+    const { data: diff } = await octokit.repos.compareCommitsWithBasehead( {
+        owner,
+        repo,
+        basehead: `${base}...${head}`,
+        per_page: 50,
+    } );
     console.log(`${diff.files.length} changed files`)
-    const changedFiles = diff.files.map(f => f.file)
-    console.log(`Changed files: ${changedFiles}`)
-    console.log(changedFiles)
+
 
     if(apiKey === '') {
         core.setFailed(`No roadie-api-key input value found.`)
