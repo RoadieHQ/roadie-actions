@@ -37,17 +37,34 @@ const run = async () => {
         owner: context.payload.organization?.login,
         repo: context.payload.repository?.name,
         basehead: `${context.payload.pull_request?.base.ref}...${context.payload.pull_request?.head.ref}`,
-        per_page: 50,
+        per_page: 100,
     } );
-    console.log(res?.data)
-    console.log(res?.body)
-    console.log(`${res.data?.files?.length} changed files`)
-
+    console.log(`${res.data.files?.length} changed files`)
+    const filesChanged = res.data.files.map(f => f.filename)
+    // const docsUpdated =
 
     if(apiKey === '') {
         core.setFailed(`No roadie-api-key input value found.`)
         console.warn(`No roadie-api-key input value found. Cannot continue.`)
         return
+    }
+
+    const getDocsPath = (path: string, fileName: string) => {
+        try {
+            const content = fs.readFileSync(path, 'utf8')
+            const doc = yaml.parseDocument(content)
+            if (doc == null || doc == undefined) {
+                core.setFailed(`No file matching the path ${path} found`)
+                console.warn(`No file matching the path ${path} found`)
+                return
+            }
+            const docContent = doc.toJS()
+            return `${path}/${docContent.docs_dir || 'docs'}`
+        } catch(e) {
+            core.setFailed(`No file matching the path ${path} found`)
+            console.warn(`No file matching the path ${path} found`)
+            return
+        }
     }
 
     try {
@@ -58,8 +75,23 @@ const run = async () => {
             console.warn(`No file matching the path ${catalogInfoPath} found`)
             return
         }
+        const parsedDocs = docs.map(yamlDoc => yamlDoc.toJS());
+        const backstageDocsPaths = parsedDocs
+            .map(doc => doc.metadata.annotations?.['backstage.io/techdocs-ref'])
+            .map(value => {
+                if(value.startsWith('dir:')){
+                    const filePath = path.slice(4)
+                    return getDocsPath(filePath, 'mkdocs.yml')
+                }
+                return
+            })
+        const docsUpdated = filesChanged.find(filePath => backstageDocsPaths.find(docPath => filePath.startsWith(docPath)))
 
-        const syncRequestsData = docs.map(yamlDoc => yamlDoc.toJS())
+        if(!docsUpdated) {
+            console.log(`No changes to doc files found - skipping sync`)
+            return
+        }
+        const syncRequestsData = parsedDocs
             .filter(doc => doc.metadata.annotations?.['backstage.io/techdocs-ref'])
             .map(doc => {
                 const namespace = doc.metadata.namespace || 'default'
