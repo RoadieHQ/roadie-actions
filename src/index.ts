@@ -11,12 +11,11 @@ const run = async () => {
     const baseUrl = `https://api.roadie.so`;
     const catalogInfoPath = core.getInput('path')
     const apiKey = core.getInput('roadie-api-key')
-    const baseDir = path.join(process.cwd(), './')
+    const baseDir = path.join(process.cwd(), '')
     const git = simpleGit({ baseDir })
     const changedFiles = (await git.diffSummary()).files.map(f => f.file)
     console.log(`Changed files: ${changedFiles}`)
-    info(`Changed files: ${changedFiles}`)
-    info(changedFiles)
+    console.log(changedFiles)
 
     if(apiKey === '') {
         core.setFailed(`No roadie-api-key input value found.`)
