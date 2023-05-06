@@ -25,9 +25,9 @@ const run = async () => {
     const githubToken = core.getInput('github-token');
     const octokit = github.getOctokit(githubToken)
     const { data: diff } = await octokit.repos.compareCommitsWithBasehead( {
-        owner,
-        repo,
-        basehead: `${base}...${head}`,
+        owner: 'owner',
+        repo: 'repo',
+        basehead: `base...head`,
         per_page: 50,
     } );
     console.log(`${diff.files.length} changed files`)
