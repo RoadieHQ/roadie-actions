@@ -36,9 +36,8 @@ const run = async () => {
         basehead: `${context.payload.pull_request?.base.ref}...${context.payload.pull_request?.head.ref}`,
         per_page: 100,
     } );
-    console.log(`${res.data.files?.length} changed files`)
     const filesChanged = res.data.files.map((f: any) => f?.filename)
-    // const docsUpdated =
+    console.log(`${filesChanged.length} changed files`)
 
     if(apiKey === '') {
         core.setFailed(`No roadie-api-key input value found.`)
@@ -52,15 +51,15 @@ const run = async () => {
             const content = fs.readFileSync(filePath, 'utf8')
             const doc = yaml.parseDocument(content)
             if (doc == null || doc == undefined) {
-                core.setFailed(`No file matching the path ${filePath} found`)
-                console.warn(`No file matching the path ${filePath} found`)
+                core.setFailed(`No mkdocs file matching the path ${filePath} found`)
+                console.warn(`No mkdocs file matching the path ${filePath} found`)
                 return
             }
             const docContent = doc.toJS()
             return `${path}/${docContent?.docs_dir || 'docs'}`
         } catch(e) {
-            core.setFailed(`No file matching the path ${filePath} found due to error ${e}`)
-            console.warn(`No file matching the path ${filePath} found`)
+            core.setFailed(`No mkdocs file matching the path ${filePath} found due to error ${e}`)
+            console.warn(`No mkdocs file matching the path ${filePath} found due to error ${e}`)
             return
         }
     }
@@ -69,8 +68,8 @@ const run = async () => {
         const content = fs.readFileSync(catalogInfoPath, 'utf8')
         const docs = yaml.parseAllDocuments(content)
         if (docs == null || docs == undefined || docs.length < 1) {
-            core.setFailed(`No file matching the path ${catalogInfoPath} found`)
-            console.warn(`No file matching the path ${catalogInfoPath} found`)
+            core.setFailed(`No catalog-info file matching the path ${catalogInfoPath} found`)
+            console.warn(`No catalog-info file matching the path ${catalogInfoPath} found`)
             return
         }
         const parsedDocs = docs.map(yamlDoc => yamlDoc.toJS());
@@ -81,8 +80,11 @@ const run = async () => {
                     const filePath = value.slice(4)
                     return getDocsPath(filePath, 'mkdocs.yml')
                 }
+                console.warn(`Techdocs annotation ${value} not a dir.`)
                 return
             })
+        console.log(`Backstage docs paths found: ${backstageDocsPaths}`)
+
         const docsUpdated = filesChanged
             .find((filePath: string | undefined) => backstageDocsPaths
                 .find((docPath: string | undefined) => docPath && filePath?.startsWith(docPath)))
