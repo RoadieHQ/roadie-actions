@@ -84,6 +84,7 @@ const run = async () => {
                 return
             })
         console.log(`Backstage docs paths found: ${backstageDocsPaths}`)
+        console.log(`File change paths: ${filesChanged}`)
 
         const docsUpdated = filesChanged
             .find((filePath: string | undefined) => backstageDocsPaths
