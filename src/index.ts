@@ -15,6 +15,8 @@ const run = async () => {
 
 
     console.log(context)
+    console.log(context.payload.pull_request.base)
+    console.log(context.payload.pull_request.head)
     // const baseDir = path.join(process.cwd(), '')
     // const git = simpleGit({ baseDir })
     // const diff = await git.diffSummary(['--cached'])
@@ -33,10 +35,10 @@ const run = async () => {
     const githubToken = core.getInput('github-token');
     const octokit = github.getOctokit(githubToken)
 
-    const res = await octokit.repos.compareCommitsWithBasehead( {
-        owner: context.payload.organization.login,
-        repo: 'repo',
-        basehead: `base...head`,
+    const res = await octokit.request( 'GET /repos/{owner}/{repo}/compare/{basehead}', {
+        owner: context.payload.organization?.login,
+        repo: context.payload.repository?.name,
+        basehead: `${context.payload.pull_request.base}...${context.payload.pull_request.head}`,
         per_page: 50,
     } );
     console.log(res.data)
