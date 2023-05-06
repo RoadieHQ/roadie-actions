@@ -56,7 +56,11 @@ const run = async () => {
                 return
             }
             const docContent = doc.toJS()
-            return `${path}/${docContent?.docs_dir || 'docs'}`
+            const docsPath = `${path}/${docContent?.docs_dir || 'docs'}`
+            if(docsPath.startsWith('./')) {
+                return docsPath.substring(2)
+            }
+            return docsPath
         } catch(e) {
             core.setFailed(`No mkdocs file matching the path ${filePath} found due to error ${e}`)
             console.warn(`No mkdocs file matching the path ${filePath} found due to error ${e}`)
