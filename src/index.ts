@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 import {context} from "@actions/github";
 import simpleGit, { Response } from 'simple-git'
+import {info} from "@actions/core";
 
 const run = async () => {
     const baseUrl = `https://api.roadie.so`;
@@ -12,8 +13,10 @@ const run = async () => {
     const apiKey = core.getInput('roadie-api-key')
     const baseDir = path.join(process.cwd(), './')
     const git = simpleGit({ baseDir })
-    const changedFiles = (await git.diffSummary(['--cached'])).files
+    const changedFiles = (await git.diffSummary()).files
     console.log(`Changed files: ${changedFiles}`)
+    info(`Changed files: ${changedFiles}`)
+    info(changedFiles)
 
     if(apiKey === '') {
         core.setFailed(`No roadie-api-key input value found.`)
