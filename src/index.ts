@@ -37,7 +37,7 @@ const run = async () => {
         per_page: 100,
     } );
     console.log(`${res.data.files?.length} changed files`)
-    const filesChanged = res.data.files.map(f => f.filename)
+    const filesChanged = res.data.files.map((f: any) => f?.filename)
     // const docsUpdated =
 
     if(apiKey === '') {
@@ -77,12 +77,14 @@ const run = async () => {
             .map(doc => doc.metadata.annotations?.['backstage.io/techdocs-ref'])
             .map(value => {
                 if(value.startsWith('dir:')){
-                    const filePath = path.slice(4)
+                    const filePath = value.slice(4)
                     return getDocsPath(filePath, 'mkdocs.yml')
                 }
                 return
             })
-        const docsUpdated = filesChanged.find(filePath => backstageDocsPaths.find(docPath => filePath.startsWith(docPath)))
+        const docsUpdated = filesChanged
+            .find((filePath: string | undefined) => backstageDocsPaths
+                .find((docPath: string | undefined) => docPath && filePath?.startsWith(docPath)))
 
         if(!docsUpdated) {
             console.log(`No changes to doc files found - skipping sync`)
