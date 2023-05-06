@@ -14,7 +14,7 @@ const run = async () => {
 
     const baseDir = path.join(process.cwd(), '')
     const git = simpleGit({ baseDir })
-    const diff = await git.diffSummary()
+    const diff = await git.diffSummary(['--cached'])
     console.log(`${diff.files.length} changed files`)
     const changedFiles = diff.files.map(f => f.file)
     console.log(`Changed files: ${changedFiles}`)
