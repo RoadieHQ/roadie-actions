@@ -47,19 +47,20 @@ const run = async () => {
     }
 
     const getDocsPath = (path: string, fileName: string) => {
+        const filePath = `${path}/${fileName}`;
         try {
-            const content = fs.readFileSync(path, 'utf8')
+            const content = fs.readFileSync(filePath, 'utf8')
             const doc = yaml.parseDocument(content)
             if (doc == null || doc == undefined) {
-                core.setFailed(`No file matching the path ${path} found`)
-                console.warn(`No file matching the path ${path} found`)
+                core.setFailed(`No file matching the path ${filePath} found`)
+                console.warn(`No file matching the path ${filePath} found`)
                 return
             }
             const docContent = doc.toJS()
-            return `${path}/${docContent.docs_dir || 'docs'}`
+            return `${path}/${docContent?.docs_dir || 'docs'}`
         } catch(e) {
-            core.setFailed(`No file matching the path ${path} found`)
-            console.warn(`No file matching the path ${path} found`)
+            core.setFailed(`No file matching the path ${filePath} found due to error ${e}`)
+            console.warn(`No file matching the path ${filePath} found`)
             return
         }
     }
