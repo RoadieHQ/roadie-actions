@@ -13,7 +13,7 @@ const run = async () => {
     const apiKey = core.getInput('roadie-api-key')
     const baseDir = path.join(process.cwd(), './')
     const git = simpleGit({ baseDir })
-    const changedFiles = (await git.diffSummary()).files
+    const changedFiles = (await git.diffSummary()).files.map(f => f.file)
     console.log(`Changed files: ${changedFiles}`)
     info(`Changed files: ${changedFiles}`)
     info(changedFiles)
