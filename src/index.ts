@@ -4,28 +4,12 @@ import * as fs from "fs";
 import fetch from 'node-fetch';
 import path from 'path';
 import {context} from "@actions/github";
-import simpleGit, { Response } from 'simple-git'
-import {info} from "@actions/core";
-const github = require('@actions/github');
+import * as github from '@actions/github';
 
 const run = async () => {
     const baseUrl = `https://api.roadie.so`;
     const catalogInfoPath = core.getInput('path')
     const apiKey = core.getInput('roadie-api-key')
-    // const baseDir = path.join(process.cwd(), '')
-    // const git = simpleGit({ baseDir })
-    // const diff = await git.diffSummary(['--cached'])
-    // const changedFiles = diff.files.map(f => f.file)
-    // console.log(`Changed files: ${changedFiles}`)
-    // console.log(changedFiles)
-
-    // const diffRes = await fetch(context.pull_request.diff_url)
-    // if (!diffRes.ok) {
-    //     console.error(`Failed to fetch diff`)
-    // }
-    // if (diffRes.ok) {
-    //     console.log(`Fetched diff ${diffRes}`)
-    // }
 
     const githubToken = core.getInput('github-token');
     const octokit = github.getOctokit(githubToken)
