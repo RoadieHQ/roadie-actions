@@ -29,7 +29,7 @@ const run = async () => {
                 const name = doc.metadata.name
                 const kind = doc.kind.toLowerCase()
 
-                console.log(`Found entity ${doc.kind}:${doc.metadata.namespace}/${doc.metadata.name} with techdocs ref`)
+                console.log(`Found entity ${doc.kind}:${doc.metadata.namespace || 'default'}/${doc.metadata.name} with techdocs ref`)
                 return {
                     url: `${baseUrl}/api/techdocs/sync/${namespace}/${kind}/${name}`,
                     name: name,
