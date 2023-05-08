@@ -1,0 +1,35 @@
+on: [ pull_request ]
+
+jobs:
+  test-sync-techdocs:
+    name: Test Sync Techdocs Action
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: yarn install
+      - run: yarn build
+
+      - name: Test techdocs-sync action on single-doc catalog-info
+        id: test-action-single-doc
+        uses: ./
+        with:
+          path: './catalog-info.yaml'
+          roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
+          github-token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
+      - name: Test techdocs-sync action on multi-doc catalog-info
+        id: test-action-multi-doc
+        uses: ./
+        with:
+          path: './catalog-info-test.yaml'
+          roadie-api-key: ${{ secrets.ROADIE_ROADIE_API_KEY }}
+          github-token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}

@@ -13,4 +13,3 @@ currently being supported with security updates.
 ## Reporting a Vulnerability
 
 Please report security issues via security@roadie.io
-
