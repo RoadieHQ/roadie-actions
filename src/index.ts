@@ -11,9 +11,16 @@ const run = async () => {
     const catalogInfoPath = core.getInput('path')
     const apiKey = core.getInput('roadie-api-key')
 
+    if(apiKey === '') {
+        core.setFailed(`No roadie-api-key input value found.`)
+        console.warn(`No roadie-api-key input value found. Cannot continue.`)
+        return
+    }
+
     const githubToken = core.getInput('github-token');
     const octokit = github.getOctokit(githubToken)
 
+    // TODO: Add Pagination for PRS with many commits
     const res = await octokit.request( 'GET /repos/{owner}/{repo}/compare/{basehead}', {
         owner: context.payload.organization?.login,
         repo: context.payload.repository?.name,
@@ -22,12 +29,6 @@ const run = async () => {
     } );
     const filesChanged = res.data.files.map((f: any) => f?.filename)
     console.log(`${filesChanged.length} changed files`)
-
-    if(apiKey === '') {
-        core.setFailed(`No roadie-api-key input value found.`)
-        console.warn(`No roadie-api-key input value found. Cannot continue.`)
-        return
-    }
 
     const getDocsPath = (path: string, fileName: string) => {
         const filePath = `${path}/${fileName}`;
@@ -53,6 +54,7 @@ const run = async () => {
     }
 
     try {
+        // TODO: Add support for mono-repos via glob matching
         const content = fs.readFileSync(catalogInfoPath, 'utf8')
         const docs = yaml.parseAllDocuments(content)
         if (docs == null || docs == undefined || docs.length < 1) {
@@ -78,6 +80,7 @@ const run = async () => {
             .find((filePath: string | undefined) => backstageDocsPaths
                 .find((docPath: string | undefined) => docPath && filePath?.startsWith(docPath)))
 
+        // TODO: Make conditional update check optional
         if(!docsUpdated) {
             console.log(`No changes to doc files found - skipping sync`)
             return
