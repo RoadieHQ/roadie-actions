@@ -17,19 +17,6 @@ const run = async () => {
         return
     }
 
-    const githubToken = core.getInput('github-token');
-    const octokit = github.getOctokit(githubToken)
-
-    // TODO: Add Pagination for PRS with many commits
-    const res = await octokit.request( 'GET /repos/{owner}/{repo}/compare/{basehead}', {
-        owner: context.payload.organization?.login,
-        repo: context.payload.repository?.name,
-        basehead: `${context.payload.pull_request?.base.ref}...${context.payload.pull_request?.head.ref}`,
-        per_page: 100,
-    } );
-    const filesChanged = res.data.files.map((f: any) => f?.filename)
-    console.log(`${filesChanged.length} changed files`)
-
     const getDocsPath = (path: string, fileName: string) => {
         const filePath = `${path}/${fileName}`;
         try {
@@ -53,16 +40,19 @@ const run = async () => {
         }
     }
 
-    try {
-        // TODO: Add support for mono-repos via glob matching
-        const content = fs.readFileSync(catalogInfoPath, 'utf8')
-        const docs = yaml.parseAllDocuments(content)
-        if (docs == null || docs == undefined || docs.length < 1) {
-            core.setFailed(`No catalog-info file matching the path ${catalogInfoPath} found`)
-            console.warn(`No catalog-info file matching the path ${catalogInfoPath} found`)
-            return
+    const checkIfDocsUpdated = async (parsedDocs: any[]): Promise<boolean> => {
+        const githubToken = core.getInput('github-token');
+        if(!githubToken) {
+            console.warn(`No github token found - skipping checking if docs were updated or not.`)
+            return Promise.resolve(true)
         }
-        const parsedDocs = docs.map(yamlDoc => yamlDoc.toJS());
+        const repoName = context.payload.repository?.name
+        const orgName = context.payload.organization?.login
+        if(!repoName || !orgName) {
+            console.warn(`Missing context info from webhook - skipping checking if docs were updated or not.`)
+            return Promise.resolve(true)
+        }
+
         const backstageDocsPaths = parsedDocs
             .map(doc => doc.metadata.annotations?.['backstage.io/techdocs-ref'])
             .map(value => {
@@ -74,14 +64,38 @@ const run = async () => {
                 return
             })
         console.log(`Backstage docs paths found: ${backstageDocsPaths}`)
+
+        // TODO: Add Pagination for PRS with many commits
+        const octokit = github.getOctokit(githubToken)
+        const res = await octokit.request( 'GET /repos/{owner}/{repo}/compare/{basehead}', {
+            owner: orgName,
+            repo: repoName,
+            basehead: `${context.payload.pull_request?.base.ref}...${context.payload.pull_request?.head.ref}`,
+            per_page: 100,
+        } );
+        const filesChanged = res.data.files?.map((f: any) => f?.filename)
+        console.log(`${filesChanged?.length} changed files`)
         console.log(`File change paths: ${filesChanged}`)
 
         const docsUpdated = filesChanged
-            .find((filePath: string | undefined) => backstageDocsPaths
+            ?.find((filePath: string | undefined) => backstageDocsPaths
                 .find((docPath: string | undefined) => docPath && filePath?.startsWith(docPath)))
+        return docsUpdated
+    }
+
+    try {
+        // TODO: Add support for mono-repos via glob matching
+        const content = fs.readFileSync(catalogInfoPath, 'utf8')
+        const docs = yaml.parseAllDocuments(content)
+        if (docs == null || docs == undefined || docs.length < 1) {
+            core.setFailed(`No catalog-info file matching the path ${catalogInfoPath} found`)
+            console.warn(`No catalog-info file matching the path ${catalogInfoPath} found`)
+            return
+        }
+        const parsedDocs = docs.map(yamlDoc => yamlDoc.toJS());
 
         // TODO: Make conditional update check optional
-        if(!docsUpdated) {
+        if(!await checkIfDocsUpdated(parsedDocs)) {
             console.log(`No changes to doc files found - skipping sync`)
             return
         }
