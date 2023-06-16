@@ -2,18 +2,17 @@ import * as core from '@actions/core'
 import * as yaml from 'yaml'
 import * as fs from "fs";
 import fetch from 'node-fetch';
-import path from 'path';
 import {context} from "@actions/github";
 import * as github from '@actions/github';
 
 const run = async () => {
-    const baseUrl = `https://api.roadie.so`;
-    const catalogInfoPath = core.getInput('path')
-    const apiKey = core.getInput('roadie-api-key')
+    const baseUrl = core.getInput('backstage-api-endpoint');
+    const catalogInfoPath = core.getInput('catalog-info-path')
+    const apiToken = core.getInput('api-token')
 
-    if(apiKey === '') {
-        core.setFailed(`No roadie-api-key input value found.`)
-        console.warn(`No roadie-api-key input value found. Cannot continue.`)
+    if(!apiToken || apiToken === '') {
+        core.setFailed(`No api-token input value found.`)
+        console.warn(`No api-token input value found. Cannot continue.`)
         return
     }
 
@@ -116,7 +115,7 @@ const run = async () => {
             })
 
         await Promise.allSettled(syncRequestsData.map(async requestData => {
-            const res = await fetch(requestData.url, { headers: {'Authorization': `Bearer ${apiKey}`}})
+            const res = await fetch(requestData.url, { headers: {'Authorization': `Bearer ${apiToken}`}})
             if (!res.ok) {
                 console.error(`Sync failed for ${requestData.url} with ${res.status}: ${res.body}`)
             }
