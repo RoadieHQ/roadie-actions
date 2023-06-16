@@ -1,0 +1,23 @@
+name: Backstage TechDocs Sync
+author: RoadieHQ
+description: "Builds a fresh rendered version of a repository's Backstage TechDocs using the Backstage API"
+inputs:
+  api-token:
+    description: 'An API token added as a Bearer token to the Backstage API requests'
+    required: true
+  catalog-info-path:
+    description: "Path to the yaml file representing the Backstage entity linked to these docs. Defaults to `./catalog-info.yaml`"
+    required: false
+    default: './catalog-info.yaml'
+  backstage-api-endpoint:
+    description: "The address of the exposed Backstage API"
+    required: true
+  github-token:
+    description: 'A Github PAT to check if the docs were updated in this branch - if not passed this action will sync the docs every time'
+    required: false
+branding:
+  icon: 'book-open'
+  color: 'orange'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
