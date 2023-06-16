@@ -1,4 +1,4 @@
-name: Sync Backstage TechDocs
+name: Backstage TechDocs Sync
 author: RoadieHQ
 description: "Builds a fresh rendered version of a repository's Backstage TechDocs using the Backstage API"
 inputs:
@@ -15,6 +15,9 @@ inputs:
   github-token:
     description: 'A Github PAT to check if the docs were updated in this branch - if not passed this action will sync the docs every time'
     required: false
+branding:
+  icon: 'book-open'
+  color: 'orange'
 runs:
   using: 'node16'
   main: 'dist/index.js'

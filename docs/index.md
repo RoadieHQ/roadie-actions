@@ -1,8 +1,12 @@
 # Sync Backstage TechDocs Action
 
-This Action is for [Roadie Backstage](https://roadie.io/) customers who have access to the Roadie API in their plan.
+This Action allows CI triggered building of Backstage TechDocs for a repository so that you don't have to wait for docs to build on demand when viewing a new version.
 
-It updates a repository's Backstage [Techdocs](https://roadie.io/docs/getting-started/technical-documentation/) build in Roadie so that you don't have to wait for the docs to build when visiting the docs after a change has been made.
+### Prerequisites
+
+This Action assumes that you have a publicly available HTTP API exposed from your Backstage backend that uses a Bearer token for Authorization.
+
+[Roadie Backstage](https://roadie.io/) customers may access this via the Roadie API. Please reach out to support@roadie.io for more info.
 
 ### Required Inputs:
 - `api-token`: An API token added as a Bearer token to the Backstage API requests
@@ -28,8 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Sync Roadie Techdocs
-        uses: roadiehq/
+      - name: Sync Backstage Techdocs
+        uses: roadiehq/backstage-techdocs-sync
         with:
           api-token: ${{ secrets.ROADIE_API_KEY }}
           catalog-info-path: './catalog-info.yaml'
