@@ -1,6 +1,6 @@
-name: Sync Roadie Techdocs
+name: Sync Backstage TechDocs
 author: RoadieHQ
-description: "Update a repository's Roadie Backstage techdocs build"
+description: "Builds a fresh rendered version of a repository's Backstage TechDocs using the Backstage API"
 inputs:
   api-token:
     description: 'An API token added as a Bearer token to the Backstage API requests'

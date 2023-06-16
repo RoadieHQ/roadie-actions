@@ -1,12 +1,18 @@
-# Sync Roadie Techdocs Action
+# Sync Backstage TechDocs Action
 
-This Action is for [Roadie Backstage](https://roadie.io/) customers who have access to the Roadie API in their plan.
+This Action allows CI triggered building of Backstage TechDocs for a repository so that you don't have to wait for docs to build on demand when viewing a new version.
 
-It updates a repository's Backstage [Techdocs](https://roadie.io/docs/getting-started/technical-documentation/) build in Roadie so that you don't have to wait for the docs to build when visiting the docs after a change has been made.
+### Prerequisites
+
+This Action assumes that you have a publicly available HTTP API exposed from your Backstage backend that uses a Bearer token for Authorization. 
+
+[Roadie Backstage](https://roadie.io/) customers may access this via the Roadie API. Please reach out to support@roadie.io for more info. 
 
 ### Required Inputs:
-- `path`: Path to the yaml file representing the Backstage entity linked to these docs. Defaults to `./catalog-info.yaml`
-- `roadie-api-key`: API key for the Roadie API
+- `api-token`: An API token added as a Bearer token to the Backstage API requests
+- `catalog-info-path`: Path to the yaml file representing the Backstage entity linked to these docs. Defaults to `./catalog-info.yaml`
+- `backstage-api-endpoint`: The address of the exposed Backstage API
+- `github-token`: A Github PAT to check if the docs were updated in this branch - if not passed this action will sync the docs every time which may cause load issues as techdocs builds can be resource intensive.
 
 ### Optional Inputs
 Supplying a `github-token` allows the action to check if there have been any updates to the docs and only sync if there have been, thereby reducing unnecessary load on your Roadie instance.
@@ -26,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Sync Roadie Techdocs
+      - name: Sync Backstage Techdocs
         uses: roadiehq/
         with:
           api-token: ${{ secrets.ROADIE_API_KEY }}
