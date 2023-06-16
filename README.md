@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Sync Backstage Techdocs
-        uses: roadiehq/
+        uses: roadiehq/backstage-techdocs-sync
         with:
           api-token: ${{ secrets.ROADIE_API_KEY }}
           catalog-info-path: './catalog-info.yaml'
